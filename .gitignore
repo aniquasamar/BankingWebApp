@@ -1,0 +1,15 @@
+# Node.js (for both client and server)
+node_modules/
+
+# Secrets (for server)
+.env
+
+# Secrets (for client, if you use create-react-app)
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Operating System files
+.DS_Store
+Thumbs.db
