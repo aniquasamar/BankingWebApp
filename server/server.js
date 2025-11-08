@@ -14,6 +14,8 @@ app.use(express.json()); // Allows us to accept JSON data in req.body
 
 // Define Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/user', require('./routes/user'));
+app.use('/api/transactions', require('./routes/transactions'));
 
 // Simple test route
 app.get('/', (req, res) => res.send('Banking API Running'));

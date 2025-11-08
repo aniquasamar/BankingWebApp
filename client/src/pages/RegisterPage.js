@@ -1,118 +1,128 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import authService from '../services/authService';
 
-// Basic styles for the form
-const styles = {
-  container: {
-    width: '100%',
-    maxWidth: '400px',
-    margin: '40px auto',
-    padding: '2rem',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: '1.5rem',
-    color: '#333',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-  },
-  input: {
-    padding: '0.75rem',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '1rem',
-  },
-  button: {
-    padding: '0.75rem',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    fontSize: '1rem',
-    cursor: 'pointer',
-  },
-  message: {
-    textAlign: 'center',
-    marginTop: '1rem',
-  },
-};
+// Import MUI components
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  Alert,
+  Avatar
+} from '@mui/material';
+import HowToRegIcon from '@mui/icons-material/HowToReg'; // A fitting icon
 
 function RegisterPage() {
-  // State to hold the form data
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  // State to hold any messages (like errors or success)
-  const [message, setMessage] =useState('');
+  const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
-  // Function to handle form submission
+  // This logic is 100% the same as before
   const handleRegister = async (e) => {
-    e.preventDefault(); // Prevent the page from reloading
-    setMessage(''); // Clear previous messages
+    e.preventDefault();
+    setMessage('');
+    setIsError(false);
 
     try {
-      // Call our authService
       const response = await authService.register(name, email, password);
+      setMessage(response.data.msg); // "User registered successfully"
       
-      // Handle success
-      setMessage(response.data.msg); // Show success message from backend
-      
-      // Redirect to login page after 2 seconds
       setTimeout(() => {
         navigate('/login');
       }, 2000);
 
     } catch (error) {
-      // Handle error
       const errorMsg = error.response?.data?.msg || 'Registration failed';
       setMessage(errorMsg);
+      setIsError(true);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Create Account</h2>
-      <form onSubmit={handleRegister} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Name"
-          style={styles.input}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          style={styles.input}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          style={styles.input}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" style={styles.button}>
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <HowToRegIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
           Register
-        </button>
-      </form>
-      {message && <p style={styles.message}>{message}</p>}
-    </div>
+        </Typography>
+
+        <Box component="form" onSubmit={handleRegister} sx={{ mt: 3 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {message && (
+            <Alert 
+              severity={isError ? 'error' : 'success'} 
+              sx={{ mt: 2, width: '100%' }}
+            >
+              {message}
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Register
+          </Button>
+
+          <Link component={RouterLink} to="/login" variant="body2">
+            {"Already have an account? Login"}
+          </Link>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 

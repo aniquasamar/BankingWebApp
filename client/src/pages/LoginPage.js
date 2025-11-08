@@ -1,56 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import authService from '../services/authService';
 
-// We can reuse the same styles
-const styles = {
-  container: {
-    width: '100%',
-    maxWidth: '400px',
-    margin: '40px auto',
-    padding: '2rem',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: '1.5rem',
-    color: '#333',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-  },
-  input: {
-    padding: '0.75rem',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '1rem',
-  },
-  button: {
-    padding: '0.75rem',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    fontSize: '1rem',
-    cursor: 'pointer',
-  },
-  message: {
-    textAlign: 'center',
-    marginTop: '1rem',
-  },
-  // We'll add a simple link style
-  link: {
-    textAlign: 'center',
-    marginTop: '1rem',
-    display: 'block',
-    color: '#007bff',
-    textDecoration: 'none',
-  }
-};
+// Import MUI components
+import { 
+  Container, 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Link, 
+  Alert 
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Avatar from '@mui/material/Avatar';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -59,55 +22,89 @@ function LoginPage() {
 
   const navigate = useNavigate();
 
+  // This logic is 100% the same as before!
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage('');
 
     try {
-      // Call the login service
       await authService.login(email, password);
-      
-      // If successful, navigate to the home/dashboard page
       navigate('/'); 
-
     } catch (error) {
-      // Handle error
       const errorMsg = error.response?.data?.msg || 'Login failed';
       setMessage(errorMsg);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Login</h2>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Email"
-          style={styles.input}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          style={styles.input}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button typeS="submit" style={styles.button}>
+    // <Container> centers your content and sets a max-width
+    <Container component="main" maxWidth="xs">
+      {/* <Box> is just a modern <div>. 'sx' is how you add custom styles */}
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
           Login
-        </button>
-      </form>
-      {message && <p style={{...styles.message, color: 'red'}}>{message}</p>}
-      
-      {/* Link to Register Page */}
-      <a href="/register" style={styles.link}>
-        Don't have an account? Register
-      </a>
-    </div>
+        </Typography>
+
+        {/* 'component="form"' is better for semantics */}
+        <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {/* Show an <Alert> for errors */}
+          {message && (
+            <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+              {message}
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained" // This gives it the modern, filled-in look
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Login
+          </Button>
+
+          {/* This uses the MUI Link, but tells it to act like a React Router Link */}
+          <Link component={RouterLink} to="/register" variant="body2">
+            {"Don't have an account? Register"}
+          </Link>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 
