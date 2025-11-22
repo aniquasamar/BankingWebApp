@@ -24,11 +24,18 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+
+  isActive: {
+    type: Boolean,
+    default: true, // Accounts are active by default
+  },
+  
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
 
 // IMPORTANT: Hash password before saving
 UserSchema.pre('save', async function (next) {
