@@ -8,6 +8,8 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage'; // <-- Import Dashboard
 import TransferPage from './pages/TransferPage';
 import HistoryPage from './pages/HistoryPage';
+import AdminDashboardPage from './pages/AdminDashboardPage'; // <-- Import
+import AdminRoute from './components/AdminRoute';
 
 // Import your PrivateRoute component
 import PrivateRoute from './components/PrivateRoute'; // <-- Import PrivateRoute
@@ -37,6 +39,15 @@ function App() {
         <Route
           path="/history"
           element={<PrivateRoute><HistoryPage /></PrivateRoute>}
+        />
+        {/* ... ADMIN ROUTE ... */}
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          } 
         />
       </Routes>
     </BrowserRouter>

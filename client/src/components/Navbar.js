@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import authService from '../services/authService';
+import userService from '../services/userService';
 
 // Import MUI components
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
@@ -8,6 +9,20 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance'; // Bank ico
 
 function Navbar() {
   const navigate = useNavigate();
+  const [role, setRole] = useState(' ');
+
+  useEffect(() => {
+    // Check role on load
+    const checkRole = async () => {
+      try {
+        const res = await userService.getUserData();
+        setRole(res.data.role);
+      } catch (err) {
+        console.log('Not logged in');
+      }
+    };
+    checkRole();
+  }, []);
 
   const handleLogout = () => {
     authService.logout();
@@ -51,6 +66,17 @@ function Navbar() {
           >
             History
           </Button>
+          {/* ONLY SHOW IF ADMIN */}
+          {role === 'admin' && (
+            <Button 
+              component={RouterLink} 
+              to="/admin" 
+              color="inherit" 
+              sx={{ border: '1px solid white', ml: 1 }}
+            >
+              Admin Panel
+            </Button>
+          )}
         </Box>
 
         <Button color="inherit" onClick={handleLogout} sx={{ ml: 2 }}>
